@@ -4,25 +4,46 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.apistart.data.api.RetrofitClient
-import com.example.apistart.data.api.model.UserDetailModel
+import com.example.apistart.data.ResponseState
+import com.example.apistart.data.api.ApiClient
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
+import javax.inject.Inject
 
-class MainViewmodel: ViewModel() {
+@HiltViewModel
+class MainViewmodel @Inject constructor(
+    val apiClient: ApiClient
+) : ViewModel() {
 
-    private val userDetails : LiveData<UserDetailModel>
+    val userDetails: LiveData<ResponseState>
         get() = _userDetails
-    val _userDetails : MutableLiveData<UserDetailModel> by lazy {
-        MutableLiveData<UserDetailModel>()
+    private val _userDetails: MutableLiveData<ResponseState> by lazy {
+        MutableLiveData<ResponseState>()
     }
 
     fun fetchUser() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = RetrofitClient.apiInstance.getUser()
-            _userDetails.postValue(result)
+        try {
+            //starting the API call
+            _userDetails.postValue(ResponseState.Loading)
 
+            //IO ->
+            //Main ->
+            viewModelScope.launch(Dispatchers.Main) {
+                val result = apiClient.getUser()
+                if (result.results.isNullOrEmpty()) {
+                    _userDetails.postValue(ResponseState.Fail("No records found!"))
+                } else {
+                    _userDetails.postValue(ResponseState.Success(result))
+                }
+            }
+        } catch (e: SocketTimeoutException) {
+            _userDetails.postValue(ResponseState.Fail(e.message.toString()))
+        } catch (e: Exception) {
+            _userDetails.postValue(ResponseState.Fail(e.message.toString()))
         }
+
     }
 
 }

@@ -7,6 +7,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
+    <ProgressBar
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:id="@+id/progress_circular"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/tvText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp"
+        />
+
     <ImageView
         android:layout_width="240dp"
         android:layout_height="240dp"

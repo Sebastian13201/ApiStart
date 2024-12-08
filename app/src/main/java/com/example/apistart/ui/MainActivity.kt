@@ -1,22 +1,23 @@
 package com.example.apistart.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.Button
+import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.apistart.R
+import com.example.apistart.data.ResponseState
 import com.example.apistart.data.api.model.UserDetailModel
 import com.example.apistart.databinding.ActivityMainBinding
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
     val viewmodel: MainViewmodel by viewModels()
     lateinit var binding: ActivityMainBinding
 
@@ -35,25 +36,50 @@ class MainActivity : AppCompatActivity() {
             viewmodel.fetchUser()
         }
 
-        viewmodel._userDetails.observe(this, { response ->
-            updateUI(response)
+        viewmodel.userDetails.observe(this, { response ->
+            when (response) {
+                is ResponseState.Loading -> updateLoadingUI()
+                is ResponseState.Success -> updateSuccessUI(response.result)
+                is ResponseState.Fail -> updateFailUI(response.error)
+            }
         })
 
         viewmodel.fetchUser()
 
     }
 
-    private fun updateUI(response: UserDetailModel) {
+    private fun updateLoadingUI() {
         binding.apply {
-            //Using Glide
-            Glide.with(this@MainActivity).load(response.results?.get(0)?.picture?.large)
-                .into(findViewById(R.id.tvUser))
+            progressCircular.visibility = View.VISIBLE
+            tvUser.visibility = View.GONE
+            tvText.text = "Loading. . ."
+        }
+    }
 
-            findViewById<TextView>(R.id.tvText).text =
+    private fun updateFailUI(error: String) {
+        binding.apply {
+            progressCircular.visibility = View.GONE
+            tvUser.visibility = View.VISIBLE
+            tvText.text = error
+        }
+    }
+
+    private fun updateSuccessUI(response: UserDetailModel) {
+        binding.apply {
+            progressCircular.visibility = View.GONE
+            tvUser.visibility = View.VISIBLE
+            Glide.with(this@MainActivity)
+                .load(response.results?.get(0)?.picture?.large)
+                .placeholder(R.drawable.ic_launcher_foreground) //in case of loading or buffering
+                .error(R.drawable.ic_launcher_background) //in case of failure
+                .into(tvUser)
+
+            tvText.text =
                 "${response?.results?.get(0)?.name?.first}, \n${response?.results?.get(0)?.gender}, \n${
-                    response?.results?.get(0)?.email
+                    response?.results?.get(
+                        0
+                    )?.email
                 }"
         }
-        }
-
+    }
 }
