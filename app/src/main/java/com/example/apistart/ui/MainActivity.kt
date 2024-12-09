@@ -2,14 +2,14 @@ package com.example.apistart.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.apistart.R
+import com.example.apistart.Viewmodel.MainViewmodel
 import com.example.apistart.data.ResponseState
 import com.example.apistart.data.api.model.UserDetailModel
 import com.example.apistart.databinding.ActivityMainBinding
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
             progressCircular.visibility = View.VISIBLE
             tvUser.visibility = View.GONE
-            tvText.text = "Loading. . ."
+            tvText.text = "Loading..."
         }
     }
 
@@ -66,20 +66,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateSuccessUI(response: UserDetailModel) {
         binding.apply {
+            tvText.text = View.GONE.toString()
             progressCircular.visibility = View.GONE
-            tvUser.visibility = View.VISIBLE
-            Glide.with(this@MainActivity)
-                .load(response.results?.get(0)?.picture?.large)
-                .placeholder(R.drawable.ic_launcher_foreground) //in case of loading or buffering
-                .error(R.drawable.ic_launcher_background) //in case of failure
-                .into(tvUser)
+            rvDisplay.visibility = View.VISIBLE
 
-            tvText.text =
-                "${response?.results?.get(0)?.name?.first}, \n${response?.results?.get(0)?.gender}, \n${
-                    response?.results?.get(
-                        0
-                    )?.email
-                }"
+            val userList = response.results ?: emptyList()
+            // Set the adapter for the RecyclerView
+            rvDisplay.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = DisplayAdapter(userList) // Set the correct adapter
+            }
+
         }
     }
 }

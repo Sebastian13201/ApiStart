@@ -1,4 +1,4 @@
-package com.example.apistart.ui
+package com.example.apistart.Viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
