@@ -1,4 +1,4 @@
-package com.example.apistart
+package com.example.apistart.data.api
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

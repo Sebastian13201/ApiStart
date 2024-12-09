@@ -1,4 +1,4 @@
-package com.example.apistart.di
+package com.example.apistart.data
 
 import com.example.apistart.data.api.ApiClient
 import com.example.apistart.data.api.ApiDetails
@@ -9,7 +9,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
