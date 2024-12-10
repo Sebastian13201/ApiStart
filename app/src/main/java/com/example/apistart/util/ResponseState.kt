@@ -1,7 +1,6 @@
-package com.example.apistart.data
+package com.example.apistart.util
 
-import com.example.apistart.data.api.model.UserDetailModel
-import retrofit2.Response
+import com.example.apistart.data.model.UserDetailModel
 
 sealed class ResponseState {
     //loading

@@ -1,5 +1,7 @@
-package com.example.apistart.data
+package com.example.apistart.di
 
+import com.example.apistart.data.repository.Repository
+import com.example.apistart.data.repository.RepositoryImpl
 import com.example.apistart.data.api.ApiClient
 import com.example.apistart.data.api.ApiDetails
 import com.google.gson.Gson
@@ -50,5 +52,10 @@ class AppModule {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .build()
+    }
+
+    @Provides
+    fun provideRepository(apiClient: ApiClient): Repository {
+        return RepositoryImpl(apiClient)
     }
 }
